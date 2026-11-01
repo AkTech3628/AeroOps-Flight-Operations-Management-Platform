@@ -16,10 +16,14 @@ redisClient.on("connect", () => {
   console.log("Redis Connected");
 });
 
-// Log only the error code/name: the full error can contain the connection
-// string (including the password), which must never end up in the logs.
+// Never log the full error: connection errors can contain the connection string
+// (including the password). ReplyError messages come from the Redis server itself
+// and are safe, so they are logged to make auth/ACL problems diagnosable.
 redisClient.on("error", (err) => {
-  console.log("Redis Error:", err.code || err.name);
+  console.log(
+    "Redis Error:",
+    err.name === "ReplyError" ? err.message : err.code || err.name
+  );
 });
 
 module.exports = redisClient;
