@@ -113,12 +113,13 @@ npm run dev            # http://localhost:5173
 | `JWT_SECRET` | Secret used to sign tokens |
 | `REDIS_URL` | Redis URL (default `redis://127.0.0.1:6379`) |
 | `AVIATION_API_KEY` | AviationStack key, needed only for sync |
+| `ADMIN_EMAIL` | Optional sign-in email granted the admin role after valid login (set only for a trusted existing account) |
 | `CORS_ORIGINS` | Comma-separated allowed origins (required in production) |
 | `PORT` | Server port (default `3000`) |
 
 `frontend` — set `VITE_API_BASE_URL` to the deployed API URL in production (defaults to `/api`, proxied to the backend in dev).
 
-> **Creating an admin:** new accounts get the `user` role. To promote one, set `role: "admin"` on that user in MongoDB.
+> **Admin access:** new accounts get the `user` role. In production, set `ADMIN_EMAIL` in Render to a trusted existing account's sign-in email. After that account signs in with a valid password, it receives the `admin` role and can sync live flights. Do not set this to an email that has not been registered by the account owner.
 
 ### Docker
 

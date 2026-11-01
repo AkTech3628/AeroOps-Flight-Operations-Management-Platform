@@ -2,6 +2,12 @@ const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const invalidCredentialsError = () => {
+  const error = new Error("Invalid Credentials");
+  error.status = 401;
+  return error;
+};
+
 const signup = async (data) => {
 
   const existingUser =
@@ -31,7 +37,7 @@ const login = async (email, password) => {
     await User.findOne({ email });
 
   if (!user) {
-    throw new Error("Invalid Credentials");
+    throw invalidCredentialsError();
   }
 
   const match =
@@ -41,7 +47,13 @@ const login = async (email, password) => {
     );
 
   if (!match) {
-    throw new Error("Invalid Credentials");
+    throw invalidCredentialsError();
+  }
+
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  if (adminEmail && user.email.toLowerCase() === adminEmail && user.role !== "admin") {
+    user.role = "admin";
+    await user.save();
   }
 
   return jwt.sign(
