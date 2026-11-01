@@ -14,8 +14,6 @@ module.exports = (req, res, next) => {
 
 try {
 
-  console.log(process.env.JWT_SECRET);
-
   req.user = jwt.verify(
     token,
     process.env.JWT_SECRET

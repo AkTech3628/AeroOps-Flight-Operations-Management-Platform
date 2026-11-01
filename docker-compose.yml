@@ -1,0 +1,36 @@
+# Local / self-hosted stack: MongoDB + Redis + API.
+#   docker compose up --build
+# API:      http://localhost:3000
+# Frontend: cd frontend && npm install && npm run dev  (http://localhost:5173)
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  api:
+    build: ./backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URL: mongodb://mongo:27017/aeroops
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-change-me-local-only}
+      AVIATION_API_KEY: ${AVIATION_API_KEY:-}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+    depends_on:
+      - mongo
+      - redis
+
+volumes:
+  mongo-data:

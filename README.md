@@ -128,6 +128,24 @@ docker build -t aeroops-api .
 docker run -p 3000:3000 --env-file .env aeroops-api
 ```
 
+### Run everything locally with Docker Compose
+
+```bash
+docker compose up --build      # MongoDB + Redis + API on http://localhost:3000
+cd frontend && npm install && npm run dev
+```
+
+## ☁️ Production deployment
+
+| Part | Where | Notes |
+|---|---|---|
+| API | **Render** web service (Docker, root dir `backend`) | Auto-deploys on push to `main` |
+| Database | **MongoDB Atlas** | Atlas → Network Access must allow Render (`0.0.0.0/0`), as Render has no fixed IP on the free plan |
+| Cache | **Upstash Redis** | `REDIS_URL` = `rediss://default:<password>@<host>:6379` (no quotes) |
+| Frontend | **Vercel** (root dir `frontend`) | Set `VITE_API_BASE_URL` = `https://<render-service>.onrender.com/api` |
+
+Render environment: `MONGO_URL`, `JWT_SECRET`, `REDIS_URL`, `CORS_ORIGINS` (the Vercel URL, e.g. `https://your-app.vercel.app`), optional `AVIATION_API_KEY`. See `backend/.env.example`.
+
 ## 🗺️ Roadmap
 
 - Flight booking and seat selection
